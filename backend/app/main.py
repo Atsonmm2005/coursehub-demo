@@ -12,6 +12,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from .database import engine
 from .schemas import EnrollmentCreate
 
+from pydantic import BaseModel
+
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
@@ -37,15 +39,17 @@ def health_check() -> dict[str, str]:
         ) from exc
     return {"status": "ok", "database": "connected"}
 
-@app.get("/courses")
+@app.get("/courses", status_code=200)
 def list_courses(
     q: str | None = Query(default=None, min_length=1),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
 ) -> list[dict[str, object]]:
     sql = """
         SELECT code, name, credits
         FROM courses
     """
-    parameters: dict[str, object] = {}
+    parameters: dict[str, object] = {"skip": skip, "limit": limit}
 
     if q is not None:
         keyword = q.strip().lower()
@@ -58,8 +62,9 @@ def list_courses(
             WHERE LOWER(code) LIKE :keyword
                 OR LOWER(name) LIKE :keyword
         """
-        parameters["keyword"] = f"%{    keyword}%"
-    sql += " ORDER BY code"
+        parameters["keyword"] = f"%{keyword}%"
+
+    sql += " ORDER BY code OFFSET :skip LIMIT :limit"
 
     with engine.connect() as connection:
         rows = connection.execute(text(sql), parameters).mappings().all()
@@ -247,3 +252,84 @@ def delete_enrollment(student_id: str, class_section_id: str) -> Response:
         )
     
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@app.get("/lecturers", status_code=200)
+def get_lecturers():
+    sql = """
+        SELECT id, name 
+        FROM lecturers 
+        ORDER BY id;
+    """
+    with engine.connect() as conn:
+        rows = conn.execute(text(sql)).mappings().all()
+        return [dict(row) for row in rows]
+
+@app.get("/sections/{section_id}", status_code=200)
+def get_section_detail(section_id: str):
+    sql = """
+        SELECT 
+            cs.id AS section_id,
+            c.code AS course_id,
+            c.name AS course_name,
+            s.name AS semester,
+            l.name AS lecturer,
+            v.capacity,
+            v.enrolled,
+            v.remaining
+        FROM class_sections cs
+        JOIN courses c ON cs.course_code = c.code
+        JOIN semesters s ON cs.semester_code = s.code  -- Đã sửa cs.semester_id và s.id
+        JOIN lecturers l ON cs.lecturer_id = l.id
+        JOIN v_section_summary v ON cs.id = v.class_id
+        WHERE cs.id = :section_id;
+    """
+    
+    with engine.connect() as conn:
+
+        result = conn.execute(text(sql), {"section_id": section_id}).mappings().first()
+
+        if not result:
+            raise HTTPException(status_code=404, detail="Không tìm thấy mã lớp học phần này")
+            
+        return dict(result)
+
+class CapacityUpdate(BaseModel):
+    capacity: int
+
+@app.patch("/sections/{section_id}/capacity", status_code=200)
+def update_section_capacity(section_id: str, payload: CapacityUpdate):
+
+    if payload.capacity <= 0:
+        raise HTTPException(status_code=400, detail="Sức chứa (capacity) phải là số nguyên lớn hơn 0")
+        
+    with engine.connect() as conn:
+
+        check_sql = """
+            SELECT cs.id, COUNT(e.student_id) AS enrolled_count
+            FROM class_sections cs
+            LEFT JOIN enrollments e ON cs.id = e.class_section_id
+            WHERE cs.id = :section_id
+            GROUP BY cs.id;
+        """
+        section = conn.execute(text(check_sql), {"section_id": section_id}).mappings().first()
+
+        if not section:
+            raise HTTPException(status_code=404, detail="Không tìm thấy mã lớp học phần")
+            
+        if payload.capacity < section['enrolled_count']:
+            raise HTTPException(
+                status_code=409, 
+                detail=f"Xung đột: Sức chứa ({payload.capacity}) không được nhỏ hơn số sinh viên đã đăng ký ({section['enrolled_count']})"
+            )
+            
+        update_sql = """
+            UPDATE class_sections 
+            SET capacity = :capacity 
+            WHERE id = :section_id;
+        """
+        conn.execute(text(update_sql), {"capacity": payload.capacity, "section_id": section_id})
+        
+        conn.commit()
+        
+        return {"message": "Cập nhật sức chứa thành công", "new_capacity": payload.capacity}
+

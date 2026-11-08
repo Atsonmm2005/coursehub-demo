@@ -1,0 +1,19 @@
+$kind: http-request
+url: "{{base_url}}/sections/UNKNOWN/capacity"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "capacity": 4
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code la 404", () => {
+          pm.response.to.have.status(404);
+      });
+    language: text/javascript
+order: 17000
