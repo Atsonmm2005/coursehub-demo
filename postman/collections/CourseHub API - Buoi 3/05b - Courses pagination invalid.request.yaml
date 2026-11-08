@@ -1,0 +1,14 @@
+$kind: http-request
+url: "{{base_url}}/courses?skip=-1&limit=10"
+method: GET
+queryParams:
+  skip: "-1"
+  limit: "10"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code la 422", () => {
+          pm.response.to.have.status(422);
+      });
+    language: text/javascript
+order: 5770

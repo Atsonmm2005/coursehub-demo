@@ -1,0 +1,26 @@
+$kind: http-request
+url: "{{base_url}}/enrollments"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "student_id": "22000004",
+      "class_section_id": "WEB-01"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code la 201", () => {
+          pm.response.to.have.status(201);
+      });
+      pm.test("Dang ky thanh cong", () => {
+          const data = pm.response.json();
+          pm.expect(data.message).to.eql("Dang ky thanh cong");
+          pm.expect(data.student_id).to.eql("22000004");
+          pm.expect(data.class_section_id).to.eql("WEB-01");
+      });
+    language: text/javascript
+order: 20000

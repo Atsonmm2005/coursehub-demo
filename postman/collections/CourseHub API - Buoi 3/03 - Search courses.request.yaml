@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{base_url}}/courses?q=web"
+method: GET
+queryParams:
+  q: web
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code la 200", () => {
+          pm.response.to.have.status(200);
+      });
+      pm.test("Tim thay hoc phan Web INT2204", () => {
+          const data = pm.response.json();
+          pm.expect(data.some(c => c.code === "INT2204")).to.be.true;
+      });
+    language: text/javascript
+order: 3000

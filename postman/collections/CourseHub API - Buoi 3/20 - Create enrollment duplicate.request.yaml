@@ -1,0 +1,20 @@
+$kind: http-request
+url: "{{base_url}}/enrollments"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "student_id": "22000004",
+      "class_section_id": "WEB-01"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code la 409", () => {
+          pm.response.to.have.status(409);
+      });
+    language: text/javascript
+order: 21000

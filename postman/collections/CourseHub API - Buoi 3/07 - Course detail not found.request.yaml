@@ -1,0 +1,11 @@
+$kind: http-request
+url: "{{base_url}}/courses/UNKNOWN"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code la 404", () => {
+          pm.response.to.have.status(404);
+      });
+    language: text/javascript
+order: 8000

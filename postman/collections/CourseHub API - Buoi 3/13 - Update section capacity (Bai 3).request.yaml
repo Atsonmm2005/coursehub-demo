@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{base_url}}/sections/WEB-01/capacity"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "capacity": 4
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code la 200", () => {
+          pm.response.to.have.status(200);
+      });
+      pm.test("Suc chua moi la 4", () => {
+          pm.expect(pm.response.json().new_capacity).to.eql(4);
+      });
+    language: text/javascript
+order: 14000

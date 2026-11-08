@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{base_url}}/students/22000001/enrollments"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code la 200", () => {
+          pm.response.to.have.status(200);
+      });
+      pm.test("Sinh vien 22000001 da dang ky 2 lop", () => {
+          const data = pm.response.json();
+          pm.expect(data.length).to.eql(2);
+      });
+    language: text/javascript
+order: 18000
