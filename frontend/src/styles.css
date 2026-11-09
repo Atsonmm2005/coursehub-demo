@@ -1,0 +1,248 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #f2f5fa;
+  color: #17283d;
+  font:
+    15px/1.55 system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+}
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px;
+}
+.hero {
+  padding: 26px 30px;
+  border-radius: 16px;
+  background: #163b61;
+  color: #fff;
+}
+h1 {
+  margin: 0;
+  font-size: 36px;
+  letter-spacing: -1px;
+}
+h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+}
+p {
+  margin: 10px 0;
+}
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 1.6px;
+  color: #bcd5ec;
+}
+.chip {
+  display: inline-block;
+  border: 1px solid #6389ad;
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 12px;
+}
+.demo-note {
+  padding: 0 4px;
+  font-size: 13px;
+  color: #59667a;
+}
+.panel {
+  background: #fff;
+  padding: 22px;
+  border: 1px solid #d9e1eb;
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
+.student-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.student-form input {
+  width: 170px;
+}
+label {
+  font-weight: 600;
+}
+input:not([type="checkbox"]) {
+  border: 1px solid #9dacbd;
+  border-radius: 7px;
+  padding: 9px 11px;
+  font: inherit;
+  min-width: 0;
+}
+input:focus,
+button:focus-visible {
+  outline: 3px solid #83b6e8;
+  outline-offset: 2px;
+}
+button {
+  border: 1px solid #20588a;
+  background: #20588a;
+  color: #fff;
+  border-radius: 7px;
+  padding: 9px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+button:hover:not(:disabled) {
+  background: #143f66;
+}
+button.secondary {
+  background: #fff;
+  color: #20588a;
+}
+
+button.secondary:hover:not(:disabled) {
+  background: #edf4fb;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr);
+  gap: 18px;
+}
+.workspace .panel {
+  min-width: 0;
+}
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.filters > label:first-child {
+  width: 100%;
+  font-size: 13px;
+}
+.filters input:not([type="checkbox"]) {
+  flex: 1;
+  width: 150px;
+}
+.check {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 13px;
+}
+.table-scroll {
+  overflow-x: auto;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+}
+th {
+  background: #eef3f9;
+  color: #40576f;
+  font-size: 12px;
+}
+th,
+td {
+  text-align: left;
+  padding: 11px 9px;
+  border-bottom: 1px solid #e2e8f0;
+}
+th:first-child {
+  width: 44%;
+}
+.subtext {
+  display: block;
+  font-size: 12px;
+  color: #52667c;
+  margin-top: 3px;
+}
+small {
+  color: #718094;
+  font-size: 11px;
+}
+.badge {
+  display: inline-block;
+  background: #e3f5ed;
+  color: #1d6147;
+  border-radius: 14px;
+  padding: 2px 10px;
+}
+.badge.full {
+  background: #edf0f4;
+  color: #5b6775;
+}
+.muted {
+  color: #63738a;
+  font-size: 13px;
+}
+.notice {
+  padding: 12px 16px;
+  border: 1px solid #b9d0e7;
+  border-radius: 8px;
+  background: #eaf3fc;
+}
+.notice.success {
+  background: #e7f6ed;
+  border-color: #9ed3b3;
+  color: #205a3b;
+}
+.notice.error {
+  background: #fff0ef;
+  border-color: #e3aca6;
+  color: #8e2820;
+}
+.enrollments {
+  padding: 0;
+  list-style: none;
+  margin: 0;
+}
+.enrollments li {
+  padding: 14px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+.enrollments button {
+  margin-top: 9px;
+}
+footer {
+  color: #63738a;
+  font-size: 12px;
+  padding: 3px 4px 18px;
+}
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .container {
+    padding: 12px;
+  }
+  .hero {
+    padding: 20px;
+  }
+  .panel {
+    padding: 16px;
+  }
+  .student-form {
+    align-items: stretch;
+  }
+  .student-form label {
+    width: 100%;
+  }
+  .student-form input {
+    flex: 1;
+  }
+  table {
+    min-width: 550px;
+  }
+}
